@@ -1,16 +1,16 @@
 package com.pichincha.dm.msa.banking.service.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.pichincha.dm.msa.banking.domain.enums.AccountType;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-@Getter
-@Setter
-public class ReportAccountDto {
-  private Long accountId;
-  private String accountNumber;
-  private String accountType;
-
-  private List<ReportTransactionDto> transactions;
-}
+public record ReportAccountDto(
+        String accountNumber,
+        AccountType accountType,
+        BigDecimal openingBalance,
+        BigDecimal closingBalance,
+        BigDecimal totalDebit,
+        BigDecimal totalCredit,
+        List<ReportMovementLineDto> movements
+) {}

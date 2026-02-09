@@ -1,13 +1,14 @@
 package com.pichincha.dm.msa.banking.service.dto;
 
-import com.pichincha.dm.msa.banking.domain.enums.AccountType;
-
 import java.math.BigDecimal;
 
-public record AccountRequestDto(
+public record MovementReportRowDto(
+        String date,
+        String client,
         String accountNumber,
-        AccountType accountType,
+        String accountType,
         BigDecimal initialBalance,
         Boolean status,
-        Long clientId
+        BigDecimal movement,
+        BigDecimal availableBalance
 ) {}

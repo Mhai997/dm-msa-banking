@@ -1,27 +1,32 @@
 package com.pichincha.dm.msa.banking.domain;
 
+import com.pichincha.dm.msa.banking.domain.enums.Gender;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "persons")
-@Inheritance(strategy = InheritanceType.JOINED)
-public class Person {
+@MappedSuperclass
+public abstract class Person {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
+  @Column(name = "name", nullable = false, length = 150)
   private String name;
-  private String gender;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "gender", nullable = false, length = 20)
+  private Gender gender;
+
+  @Column(name = "age", nullable = false)
   private Integer age;
 
-  @Column(unique = true)
+  @Column(name = "identification", nullable = false, length = 20, unique = true)
   private String identification;
 
+  @Column(name = "address", nullable = false, length = 255)
   private String address;
+
+  @Column(name = "phone", nullable = false, length = 30)
   private String phone;
 }
+
