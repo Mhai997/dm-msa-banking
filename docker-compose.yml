@@ -1,0 +1,15 @@
+services:
+  dm-msa-banking:
+    build: .
+    image: dm-msa-banking:1.0
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: development
+      SPRING_DATASOURCE_URL: "jdbc:h2:file:/data/bankingdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
+
+    volumes:
+      - dm-banking-data:/data
+
+volumes:
+  dm-banking-data:
