@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -73,5 +74,13 @@ public class MovementServiceImpl implements MovementService {
             throw new NotFoundException("Movement not found");
         }
         movementRepository.deleteById(movementId);
+    }
+
+    @Override
+    public List<MovementResponseDto> findAllMovements() {
+        return movementRepository.findAll()
+                .stream()
+                .map(movementMapper::toResponse)
+                .toList();
     }
 }

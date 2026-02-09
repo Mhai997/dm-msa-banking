@@ -32,3 +32,6 @@ CREATE TABLE movement (
 
 CREATE INDEX idx_account_client ON account(client_id);
 CREATE INDEX idx_movement_account_date ON movement(account_id, movement_date);
+
+ALTER TABLE client
+ADD CONSTRAINT uk_client_identification UNIQUE (identification);

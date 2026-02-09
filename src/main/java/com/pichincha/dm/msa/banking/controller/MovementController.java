@@ -6,6 +6,7 @@ import com.pichincha.dm.msa.banking.service.dto.MovementResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/movimientos")
@@ -29,5 +30,10 @@ public class MovementController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long movementId) {
         movementService.delete(movementId);
+    }
+
+    @GetMapping
+    public List<MovementResponseDto> getAllMovements() {
+        return movementService.findAllMovements();
     }
 }
