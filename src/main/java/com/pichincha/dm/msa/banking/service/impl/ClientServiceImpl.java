@@ -20,70 +20,111 @@ import java.util.List;
 @Transactional
 public class ClientServiceImpl implements ClientService {
 
+    private static final String CLIENT_NOT_FOUND = "Cliente no encontrado";
+    private static final String INVALID_IDENTIFICATION = "La cédula no es válida";
+    private static final String UNDERAGE_CLIENT = "El cliente debe ser mayor de edad";
+    private static final String DUPLICATE_IDENTIFICATION = "Ya existe un cliente con esta identificación";
+    private static final String INVALID_PHONE = "El número de teléfono no es válido";
+    private static final String INVALID_PASSWORD = "La contraseña debe tener al menos 6 caracteres";
+
     private final ClientRepository clientRepository;
     private final ClientMapper clientMapper;
 
     @Override
-    public ClientResponseDto create(ClientRequestDto dto) {
-        // 🔐 VALIDACIÓN DE CÉDULA ECUATORIANA
-        if (!EcuadorIdValidator.isValid(dto.identification())) {
-            throw new BusinessException("Invalid Ecuadorian ID number");
-        }
+    public ClientResponseDto create(ClientRequestDto request) {
+        validateClientData(request);
+        validateIdentificationUniqueness(request.identification());
 
-        // 🔐 VALIDACIÓN DE EDAD
-        if (dto.age() < 18) {
-            throw new BusinessException("Client must be at least 18 years old");
-        }
+        Client client = clientMapper.toEntity(request);
+        Client savedClient = clientRepository.save(client);
 
-        // 🔐 VALIDACIÓN DE UNICIDAD (ejemplo)
-        if (clientRepository.existsByIdentification(dto.identification())) {
-            throw new BusinessException("Client already exists with this ID");
-        }
-        if (dto.phone().length() != 10) {
-            throw new BusinessException("Invalid phone number");
-        }
-
-        if (dto.password().length() < 6) {
-            throw new BusinessException("Password too short");
-        }
-
-
-        Client client = clientMapper.toEntity(dto);
-        Client saved = clientRepository.save(client);
-
-        return clientMapper.toResponse(saved);
+        return clientMapper.toResponse(savedClient);
     }
 
     @Override
     @Transactional(readOnly = true)
     public ClientResponseDto getById(Long clientId) {
-        Client entity = clientRepository.findById(clientId)
-                .orElseThrow(() -> new NotFoundException("Client not found"));
-        return clientMapper.toResponse(entity);
+        Client client = findClientById(clientId);
+        return clientMapper.toResponse(client);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ClientResponseDto> getAll() {
-        return clientRepository.findAll().stream()
+        return clientRepository.findAll()
+                .stream()
                 .map(clientMapper::toResponse)
                 .toList();
     }
 
     @Override
-    public ClientResponseDto update(Long clientId, ClientRequestDto dto) {
-        Client entity = clientRepository.findById(clientId)
-                .orElseThrow(() -> new NotFoundException("Client not found"));
+    public ClientResponseDto update(Long clientId, ClientRequestDto request) {
+        Client existingClient = findClientById(clientId);
 
-        clientMapper.updateEntity(dto, entity);
-        return clientMapper.toResponse(clientRepository.save(entity));
+        validateClientData(request);
+        validateIdentificationUniquenessForUpdate(clientId, request.identification());
+
+        clientMapper.updateEntity(request, existingClient);
+        Client updatedClient = clientRepository.save(existingClient);
+
+        return clientMapper.toResponse(updatedClient);
     }
 
     @Override
     public void delete(Long clientId) {
         if (!clientRepository.existsById(clientId)) {
-            throw new NotFoundException("Client not found");
+            throw new NotFoundException(CLIENT_NOT_FOUND);
         }
         clientRepository.deleteById(clientId);
+    }
+
+    private Client findClientById(Long clientId) {
+        return clientRepository.findById(clientId)
+                .orElseThrow(() -> new NotFoundException(CLIENT_NOT_FOUND));
+    }
+
+    private void validateClientData(ClientRequestDto request) {
+        validateIdentification(request.identification());
+        validateAge(request.age());
+        validatePhone(request.phone());
+        validatePassword(request.password());
+    }
+
+    private void validateIdentification(String identification) {
+        if (!EcuadorIdValidator.isValid(identification)) {
+            throw new BusinessException(INVALID_IDENTIFICATION);
+        }
+    }
+
+    private void validateAge(Integer age) {
+        if (age < 18) {
+            throw new BusinessException(UNDERAGE_CLIENT);
+        }
+    }
+
+    private void validatePhone(String phone) {
+        if (phone == null || phone.length() != 10) {
+            throw new BusinessException(INVALID_PHONE);
+        }
+    }
+
+    private void validatePassword(String password) {
+        if (password == null || password.length() < 6) {
+            throw new BusinessException(INVALID_PASSWORD);
+        }
+    }
+
+    private void validateIdentificationUniqueness(String identification) {
+        if (clientRepository.existsByIdentification(identification)) {
+            throw new BusinessException(DUPLICATE_IDENTIFICATION);
+        }
+    }
+
+    private void validateIdentificationUniquenessForUpdate(Long clientId, String identification) {
+        clientRepository.findByIdentification(identification)
+                .filter(client -> !client.getClientId().equals(clientId))
+                .ifPresent(client -> {
+                    throw new BusinessException(DUPLICATE_IDENTIFICATION);
+                });
     }
 }

@@ -3,6 +3,7 @@ package com.pichincha.dm.msa.banking.controller;
 import com.pichincha.dm.msa.banking.service.ClientService;
 import com.pichincha.dm.msa.banking.service.dto.ClientRequestDto;
 import com.pichincha.dm.msa.banking.service.dto.ClientResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class ClientController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ClientResponseDto create(@RequestBody ClientRequestDto dto) {
+    public ClientResponseDto create(@Valid @RequestBody ClientRequestDto dto) {
         return clientService.create(dto);
     }
 
@@ -33,7 +34,7 @@ public class ClientController {
     }
 
     @PutMapping("/{clientId}")
-    public ClientResponseDto update(@PathVariable Long clientId, @RequestBody ClientRequestDto dto) {
+    public ClientResponseDto update(@PathVariable Long clientId, @Valid @RequestBody ClientRequestDto dto) {
         return clientService.update(clientId, dto);
     }
 
