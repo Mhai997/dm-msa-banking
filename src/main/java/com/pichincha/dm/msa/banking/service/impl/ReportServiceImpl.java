@@ -57,12 +57,12 @@ public class ReportServiceImpl implements ReportService {
                     .toList();
 
             BigDecimal totalDebit = movements.stream()
-                    .filter(m -> m.getMovementType() == MovementType.DEBIT)
+                    .filter(m -> m.getMovementType() == MovementType.RETIRO)
                     .map(m -> m.getAmount().abs())
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
             BigDecimal totalCredit = movements.stream()
-                    .filter(m -> m.getMovementType() == MovementType.CREDIT)
+                    .filter(m -> m.getMovementType() == MovementType.RETIRO)
                     .map(m -> m.getAmount().abs())
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 

@@ -1,7 +1,7 @@
 package com.pichincha.dm.msa.banking.service.dto;
 
 import com.pichincha.dm.msa.banking.domain.enums.MovementType;
-
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
@@ -19,7 +19,7 @@ public record MovementRequestDto(
         @Positive(message = "El valor del movimiento debe ser mayor a cero")
         BigDecimal amount,
 
-        @NotNull(message = "El id de la cuenta es obligatorio")
-        Long accountId
+        @NotBlank(message = "El número de cuenta es obligatorio")
+        String accountNumber
 
 ) {}

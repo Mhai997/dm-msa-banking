@@ -30,6 +30,7 @@ public class MovementServiceImpl implements MovementService {
     private static final String INSUFFICIENT_BALANCE = "Saldo no disponible";
     private static final String INVALID_AMOUNT = "El valor del movimiento debe ser mayor a cero";
     private static final String INVALID_MOVEMENT_TYPE = "El tipo de movimiento es obligatorio";
+    private static final String INVALID_ACCOUNT_NUMBER = "El número de cuenta es obligatorio";
 
     private final MovementRepository movementRepository;
     private final AccountRepository accountRepository;
@@ -39,7 +40,7 @@ public class MovementServiceImpl implements MovementService {
     public MovementResponseDto create(MovementRequestDto request) {
         validateRequest(request);
 
-        Account account = findAccountById(request.accountId());
+        Account account = findAccountByNumber(request.accountNumber());
         BigDecimal currentBalance = getCurrentBalance(account);
         BigDecimal signedAmount = getSignedAmount(request.amount(), request.movementType());
         BigDecimal newBalance = calculateNewBalance(currentBalance, signedAmount);
@@ -54,8 +55,8 @@ public class MovementServiceImpl implements MovementService {
 
     @Override
     @Transactional(readOnly = true)
-    public MovementResponseDto getById(Long movementId) {
-        Movement movement = movementRepository.findById(movementId)
+    public MovementResponseDto getById(Long accountNumber) {
+        Movement movement = movementRepository.findById(accountNumber)
                 .orElseThrow(() -> new NotFoundException(MOVEMENT_NOT_FOUND));
 
         return movementMapper.toResponse(movement);
@@ -90,10 +91,14 @@ public class MovementServiceImpl implements MovementService {
         if (request.amount() == null || request.amount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new BusinessException(INVALID_AMOUNT);
         }
+
+        if (request.accountNumber() == null || request.accountNumber().isBlank()) {
+            throw new BusinessException(INVALID_ACCOUNT_NUMBER);
+        }
     }
 
-    private Account findAccountById(Long accountId) {
-        return accountRepository.findById(accountId)
+    private Account findAccountByNumber(String accountNumber) {
+        return accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new NotFoundException(ACCOUNT_NOT_FOUND));
     }
 
@@ -107,7 +112,7 @@ public class MovementServiceImpl implements MovementService {
     private BigDecimal getSignedAmount(BigDecimal amount, MovementType movementType) {
         BigDecimal absoluteAmount = amount.abs();
 
-        if (movementType == MovementType.DEBIT) {
+        if (movementType == MovementType.RETIRO) {
             return absoluteAmount.negate();
         }
 

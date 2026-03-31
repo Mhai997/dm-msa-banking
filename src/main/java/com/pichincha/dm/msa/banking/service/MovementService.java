@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface MovementService {
     MovementResponseDto create(MovementRequestDto dto);
-    MovementResponseDto getById(Long movementId);
+    MovementResponseDto getById(Long accountNumber);
     void delete(Long movementId);
     List<MovementResponseDto> findAllMovements();
 }

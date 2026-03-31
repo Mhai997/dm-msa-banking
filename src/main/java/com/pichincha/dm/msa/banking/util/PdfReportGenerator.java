@@ -113,12 +113,12 @@ public class PdfReportGenerator {
             String date = m.movementDate().toLocalDate().format(DATE_FMT);
             String office = "ONLINE"; // placeholder
             String docNo = String.valueOf(idx + 1); // correlativo (o movementId si lo incluyes)
-            String desc = m.movementType() == MovementType.DEBIT ? "TRANSFERENCIA / PAGO" : "ABONO / DEPOSITO";
+            String desc = m.movementType() == MovementType.RETIRO ? "TRANSFERENCIA / PAGO" : "ABONO / DEPOSITO";
 
             BigDecimal debit = BigDecimal.ZERO;
             BigDecimal credit = BigDecimal.ZERO;
 
-            if (m.movementType() == MovementType.DEBIT) {
+            if (m.movementType() == MovementType.RETIRO) {
                 debit = m.amount().abs();
                 totalDebit = totalDebit.add(debit);
             } else {
@@ -208,13 +208,13 @@ public class PdfReportGenerator {
         writeText(ctx, x + 3, ty, "Descripción", 9, true);
         x += COL_DESC;
 
-        writeText(ctx, x + 3, ty, "Débito", 9, true);
+        writeText(ctx, x + 3, ty, "Retiro", 9, true);
         x += COL_DEBIT;
 
-        writeText(ctx, x + 3, ty, "Crédito", 9, true);
+        writeText(ctx, x + 3, ty, "Deposito", 9, true);
         x += COL_CREDIT;
 
-        writeText(ctx, x + 3, ty, "Saldo", 9, true);
+        writeText(ctx, x + 3, ty, "Saldo Disponible", 9, true);
 
         return y - ROW_H;
     }
@@ -272,11 +272,11 @@ public class PdfReportGenerator {
         writeText(ctx, x, y, "Resumen", 11, true);
         y -= 14;
 
-        writeText(ctx, x, y, "Total Débito:", 10, false);
+        writeText(ctx, x, y, "Total Retiros:", 10, false);
         writeTextRight(ctx, right, y, money(totalDebit), 10, true);
         y -= 14;
 
-        writeText(ctx, x, y, "Total Crédito:", 10, false);
+        writeText(ctx, x, y, "Total Depositos:", 10, false);
         writeTextRight(ctx, right, y, money(totalCredit), 10, true);
         y -= 14;
 
