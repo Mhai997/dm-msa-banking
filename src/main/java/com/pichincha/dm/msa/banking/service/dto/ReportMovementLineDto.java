@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 public record ReportMovementLineDto(
         LocalDateTime movementDate,
+        String description,
         MovementType movementType,
         BigDecimal amount,
         BigDecimal balance

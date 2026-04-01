@@ -113,7 +113,7 @@ public class PdfReportGenerator {
             String date = m.movementDate().toLocalDate().format(DATE_FMT);
             String office = "ONLINE"; // placeholder
             String docNo = String.valueOf(idx + 1); // correlativo (o movementId si lo incluyes)
-            String desc = m.movementType() == MovementType.RETIRO ? "TRANSFERENCIA / PAGO" : "ABONO / DEPOSITO";
+            String desc = m.description();
 
             BigDecimal debit = BigDecimal.ZERO;
             BigDecimal credit = BigDecimal.ZERO;
@@ -214,7 +214,7 @@ public class PdfReportGenerator {
         writeText(ctx, x + 3, ty, "Deposito", 9, true);
         x += COL_CREDIT;
 
-        writeText(ctx, x + 3, ty, "Saldo Disponible", 9, true);
+        writeText(ctx, x + 3, ty, "Saldo Disp.", 9, true);
 
         return y - ROW_H;
     }

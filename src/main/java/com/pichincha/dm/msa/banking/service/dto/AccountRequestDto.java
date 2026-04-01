@@ -8,10 +8,10 @@ import java.math.BigDecimal;
 public record AccountRequestDto(
 
         @NotBlank(message = "El número de cuenta es obligatorio")
+        @Pattern(regexp = "\\d{6,10}", message = "El número de cuenta debe tener entre 6 y 10 dígitos")
         String accountNumber,
 
         @NotNull(message = "El tipo de cuenta es obligatorio")
-        @Pattern(regexp = "\\d{6,10}", message = "El número de cuenta debe tener entre 6 y 10 dígitos")
         AccountType accountType,
 
         @NotNull(message = "El saldo inicial es obligatorio")

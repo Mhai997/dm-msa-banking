@@ -3,6 +3,7 @@ package com.pichincha.dm.msa.banking.controller;
 import com.pichincha.dm.msa.banking.service.AccountService;
 import com.pichincha.dm.msa.banking.service.dto.AccountRequestDto;
 import com.pichincha.dm.msa.banking.service.dto.AccountResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class AccountController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AccountResponseDto create(@RequestBody AccountRequestDto dto) {
+    public AccountResponseDto create(@Valid @RequestBody AccountRequestDto dto) {
         return accountService.create(dto);
     }
 
